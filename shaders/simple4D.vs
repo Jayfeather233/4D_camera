@@ -18,10 +18,10 @@ uniform mat4 projection;
 void main() {
   vec4 cam_pos_4D = view4D_rot * (model_rot * (aPos + model_off) + view4D_off);
   // vec4 cam_pos_4D = view4D_rot * (aPos + view4D_off);
-  float ww = cam_pos_4D.w;
-  cam_pos_4D.w = 1.0;
+  // float ww = cam_pos_4D.w;
+  // cam_pos_4D.w = 1.0;
   gl_Position = projection * view3D * cam_pos_4D;
-  gl_Position.w *= ww;
+  // gl_Position.w *= ww;
   ourColor = aColor * (1.0 - gl_Position.w / 100.0) +
              vec3(0.0, 0.0, 0.0) * gl_Position.w / 100.0;
 }

@@ -41,7 +41,6 @@ public:
         Pitch = 0.0f;
         Zoom = 45.0f;
         updateCameraVectors();
-        Position = -Front * 10.0f;
     }
 
     // returns the view matrix calculated using Euler Angles and the LookAt Matrix
@@ -52,15 +51,19 @@ public:
 
         glm::mat4 rotYaw1 = glm::identity<glm::mat4>();
         rotYaw1[0][0] = cos(glm::radians(Yaw1));
-        rotYaw1[0][1] = sin(glm::radians(Yaw1));
-        rotYaw1[1][1] = cos(glm::radians(Yaw1));
-        rotYaw1[1][0] = -sin(glm::radians(Yaw1));
+        rotYaw1[0][3] = sin(glm::radians(Yaw1));
+        rotYaw1[3][3] = cos(glm::radians(Yaw1));
+        rotYaw1[3][0] = -sin(glm::radians(Yaw1));
         glm::mat4 rotYaw2 = glm::identity<glm::mat4>();
-        rotYaw1[2][2] = cos(glm::radians(Yaw2));
-        rotYaw1[2][3] = sin(glm::radians(Yaw2));
+        rotYaw1[1][1] = cos(glm::radians(Yaw2));
+        rotYaw1[1][3] = sin(glm::radians(Yaw2));
         rotYaw1[3][3] = cos(glm::radians(Yaw2));
-        rotYaw1[3][2] = -sin(glm::radians(Yaw2));
+        rotYaw1[3][1] = -sin(glm::radians(Yaw2));
         glm::mat4 rotPitch = glm::identity<glm::mat4>();
+        rotYaw1[2][2] = cos(glm::radians(Pitch));
+        rotYaw1[2][3] = sin(glm::radians(Pitch));
+        rotYaw1[3][3] = cos(glm::radians(Pitch));
+        rotYaw1[3][2] = -sin(glm::radians(Pitch));
 
         // Combine the rotations to form the full rotation matrix
         glm::mat4 rotation = rotYaw1 * rotYaw2 * rotPitch;
@@ -90,6 +93,7 @@ private:
         front.z = cos(glm::radians(Yaw2)) * cos(glm::radians(Pitch));
         front.w = sin(glm::radians(Yaw2)) * cos(glm::radians(Pitch));
         Front = front;
+        Position = -Front * 3.0f;
     }
 
 };

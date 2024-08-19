@@ -7,8 +7,7 @@
 #include <vector>
 #include <cmath>
 
-#include "obj4D.hpp"
-#include "obj3D.hpp"
+#include "object4D.hpp"
 #include "camera3D.hpp"
 #include "camera4D.hpp"
 #include "shader.hpp"
@@ -21,7 +20,6 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
     SCR_HEIGHT = height;
 }
 void processInput(GLFWwindow *window, float deltaTime);
-void mouse_callback(GLFWwindow* window, double xposIn, double yposIn);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
 ogl::Camera3D cam3d;
@@ -41,7 +39,6 @@ int main() {
     }
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
     // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSwapInterval(1);  // Enable vsync
@@ -56,11 +53,13 @@ int main() {
     auto shaderProgram = ogl::programFromFiles("./shaders", "simple4D.vs", "simple.fs");
 
     // Vertex data & buffers
-    obj4D obj = create_4D_obj();
-    obj.gen_buffer(1);
+    object4D obj = create_4D_obj();
+    obj.offset = glm::vec4(0.5);
+    obj.gen_buffer();
 
-    obj3D obj2 = create_3D_obj();
-    obj2.gen_buffer(2);
+    object3D obj2 = create_3D_obj();
+    obj2.offset = glm::vec3(0.75);
+    obj2.gen_buffer();
 
     // Rendering loop
     float lastTime = glfwGetTime();
@@ -79,6 +78,7 @@ int main() {
         obj2.draw();
         obj2.SetUniform(shaderProgram2);
         cam3d.SetUniform(shaderProgram2, SCR_WIDTH, SCR_HEIGHT);
+        shaderProgram2->release();
 
 
 
@@ -87,6 +87,7 @@ int main() {
         obj.SetUniform(shaderProgram);
         cam3d.SetUniform(shaderProgram, SCR_WIDTH, SCR_HEIGHT);
         cam4d.SetUniform(shaderProgram);
+        shaderProgram->release();
 
 
         glfwSwapBuffers(window);
@@ -135,32 +136,6 @@ void processInput(GLFWwindow *window, float deltaTime)
     if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS){
         cam3d.ProcessMouseMovement(1000.0f * deltaTime, 0.0f);
     }
-}
-
-// glfw: whenever the mouse moves, this callback is called
-// -------------------------------------------------------
-
-bool firstMouse = true;
-int lastX = 0;
-int lastY = 0;
-void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
-{
-    float xpos = static_cast<float>(xposIn);
-    float ypos = static_cast<float>(yposIn);
-
-    if (firstMouse)
-    {
-        lastX = xpos;
-        lastY = ypos;
-        firstMouse = false;
-    }
-
-    float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
-    lastX = xpos;
-    lastY = ypos;
-    // cam3d.ProcessMouseMovement(xoffset, yoffset);
-
 }
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
