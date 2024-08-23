@@ -5,8 +5,26 @@ This project is inspired by: [yugu233](yugu233.com) and his project [4D](https:/
 
 Some of the codes taken from [tendo518](https://github.com/tendo518) and [learnopengl](https://learnopengl.com/)
 
+### Compile
+
+dependencies:
+
+```
+cmake
+glfw3
+glew
+glm
+fmt
+```
+
+then run `bash ./build.sh` to build & run.
+
 ### Movement:
 
 For moving 4D Cam: `qweasd` for rotation, `zx` for zoom in/out;
 
 For moving 3D Cam: `ijkl` for rotation, `nm` for zoom in/out
+
+TODO:
+
+more shapes, GUI for displaying different object, both solid/mesh render and line render, camera4D optimization.
