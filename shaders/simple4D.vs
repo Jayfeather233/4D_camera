@@ -21,4 +21,6 @@ void main() {
   // gl_Position.w *= ww;
   ourColor = aColor * (1.0 - gl_Position.w / 50.0) +
              vec3(0.0, 0.0, 0.0) * gl_Position.w / 50.0;
+  // ourColor = vec3(1.0, 1.0, 1.0) * (1.0 - gl_Position.w / 30.0) +
+  //            vec3(0.0, 0.0, 0.0) * gl_Position.w / 30.0;
 }

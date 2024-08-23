@@ -13,7 +13,10 @@ public:
         {
             fmt::print("Warn: nullptr object at Object4D Constructor");
         }
-    };
+    }
+    object4D(object_type ot) : object_base(create_obj_base(ot))
+    {
+    }
     [[override]] void set_VertexAttrPointer()
     {
         glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 7, (void *)0);
@@ -46,7 +49,10 @@ public:
         {
             fmt::print("Warn: nullptr object at Object3D Constructor");
         }
-    };
+    }
+    object3D(object_type ot) : object_base(create_obj_base(ot))
+    {
+    }
     [[override]] void set_VertexAttrPointer()
     {
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, (void *)0);
@@ -69,20 +75,3 @@ public:
         return ret;
     }
 };
-
-object4D create_4D_obj(object_type tp = object_type::CUBE_4D)
-{
-    return object4D(create_obj_base(tp));
-}
-object4D create_4D_obj(obj_base *bs)
-{
-    return object4D(bs);
-}
-object3D create_3D_obj(object_type tp = object_type::CUBE_3D)
-{
-    return object3D(create_obj_base(tp));
-}
-object3D create_3D_obj(obj_base *bs)
-{
-    return object3D(bs);
-}

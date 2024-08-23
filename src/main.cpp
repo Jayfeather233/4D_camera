@@ -7,7 +7,7 @@
 #include <vector>
 #include <cmath>
 
-#include "object4D.hpp"
+#include "objects.hpp"
 #include "camera3D.hpp"
 #include "camera4D.hpp"
 #include "shader.hpp"
@@ -32,6 +32,7 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_SAMPLES, 4);
 
     GLFWwindow *window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "4DCam", NULL, NULL);
     if (window == NULL)
@@ -52,29 +53,36 @@ int main()
         throw std::runtime_error(
             "Failed to initialize GLEW: {}" + std::string(reinterpret_cast<char const *>(glewGetErrorString(err))));
     }
+    glEnable(GL_MULTISAMPLE);
 
     auto shaderProgram2 = ogl::programFromFiles("./shaders", "simple3D.vs", "simple.fs");
     auto shaderProgram = ogl::programFromFiles("./shaders", "simple4D.vs", "simple.fs");
 
     // Vertex data & buffers
     obj_base *cube4d = create_obj_base();
-    std::vector<object4D> objs;
+    std::vector<object4D*> objs;
     for (int i = 0; i < 9; i++)
     {
-        object4D u = create_4D_obj(cube4d);
+        if(i<4) continue;
+        objs.push_back(new object4D(cube4d));
+        object4D *u = objs[objs.size()-1];
 
         if (i != 8)
         {
             glm::vec4 off = glm::vec4(0.0);
             off[i / 2] = i % 2 ? 1 : -1;
             off += -0.5f;
-            u.setOffset(off);
+            u->setOffset(off);
+        } else {
+            u->setOffset(glm::vec4(-0.5f));
         }
-        objs.push_back(u);
-        u.gen_buffer();
+        u->gen_buffer();
     }
 
-    object3D obj2 = create_3D_obj();
+    // objs.push_back(new object4D(object_type::COORD_4D));
+    // objs[objs.size()-1]->gen_buffer();
+
+    object3D obj2 = object3D(object_type::CUBE_3D);
     obj2.addRotate(1.5f);
     obj2.setOffset(glm::vec3(-0.5f));
     obj2.gen_buffer();
@@ -103,7 +111,7 @@ int main()
         cam4d.SetUniform(shaderProgram);
         for (auto obj : objs)
         {
-            obj.draw();
+            obj->draw();
         }
         shaderProgram->release();
 
@@ -111,7 +119,7 @@ int main()
         glfwPollEvents();
     }
     for (auto obj : objs)
-        obj.destroy();
+        obj->destroy();
     obj2.destroy();
     glfwDestroyWindow(window);
     glfwTerminate();
