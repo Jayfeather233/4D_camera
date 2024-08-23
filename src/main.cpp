@@ -63,7 +63,7 @@ int main()
     std::vector<object4D*> objs;
     for (int i = 0; i < 9; i++)
     {
-        if(i<4) continue;
+        if(i<0) continue;
         objs.push_back(new object4D(cube4d));
         object4D *u = objs[objs.size()-1];
 
