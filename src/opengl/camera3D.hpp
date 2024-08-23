@@ -22,7 +22,7 @@ enum Camera3D_Movement {
 static const float YAW         = -90.0f;
 static const float PITCH       =  0.0f;
 static const float SPEED       =  2.5f;
-static const float SENSITIVITY =  0.01f;
+static const float SENSITIVITY =  0.1f;
 static const float ZOOM        =  45.0f;
 
 // An abstract camera class that processes input and calculates the corresponding Euler Angles, Vectors and Matrices for use in OpenGL
@@ -42,6 +42,7 @@ public:
     float MovementSpeed;
     float MouseSensitivity;
     float Zoom;
+    float distance;
 
     // constructor with vectors
     Camera3D(glm::vec3 position = glm::vec3(0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
@@ -50,6 +51,7 @@ public:
         WorldUp = up;
         Yaw = yaw;
         Pitch = pitch;
+        distance = 3.0f;
         updateCameraVectors();
     }
 
@@ -99,6 +101,10 @@ public:
         if (Zoom > 60.0f)
             Zoom = 60.0f;
     }
+    void addDistance(float u){
+        distance += u;
+        updateCameraVectors();
+    }
 
 private:
     // calculates the front vector from the Camera's (updated) Euler Angles
@@ -114,7 +120,11 @@ private:
         Right = glm::normalize(glm::cross(Front, WorldUp));  // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
         Up    = glm::normalize(glm::cross(Right, Front));
 
-        Position = Front * -2.0f;
+        Position = Front * -distance;
+        glm::vec4 Pos2 = GetViewMatrix() * glm::vec4(Front, 1.0);
+        // printf("3D: %.2f %.2f %.2f\n", Position.x, Position.y, Position.z);
+        // printf("    %.2f %.2f %.2f\n", Pos2.x, Pos2.y, Pos2.z);
     }
+
 };
 } // namespace ogl

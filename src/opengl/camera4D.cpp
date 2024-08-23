@@ -1,6 +1,6 @@
 #include "camera4D.hpp"
 
-static const float SENSITIVITY = 10.0f;
+static const float SENSITIVITY = 30.0f;
 void ogl::Camera4D::ProcessKeyboard(Camera4D_Movement direction, float deltaTime)
 {
     float velocity = SENSITIVITY * deltaTime;

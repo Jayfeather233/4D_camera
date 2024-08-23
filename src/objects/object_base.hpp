@@ -8,18 +8,20 @@
 template <unsigned int D>
 class object_base
 {
-public:
+protected:
     obj_base *base_model;
     glm::vec<D, float, glm::packed_highp> offset;
     glm::mat<D, D, float, glm::packed_highp> rotate;
     GLuint VBO, VAO, EBO;
 
+public:
     object_base(obj_base *bs, const glm::vec<D, float, glm::packed_highp> &off = glm::vec<D, float, glm::packed_highp>(0.0f),
                 const glm::mat<D, D, float, glm::packed_highp> &rot = glm::identity<glm::mat<D, D, float, glm::packed_highp>>()) : base_model(bs), offset(off), rotate(rot)
     {
     }
 
     virtual void set_VertexAttrPointer() = 0;
+    virtual std::vector<float> transform_points() = 0;
 
     void gen_buffer()
     {
@@ -31,7 +33,8 @@ public:
 
         // 将顶点数据传输到 GPU
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, base_model->points.size() * sizeof(float), base_model->points.data(), GL_STATIC_DRAW);
+        std::vector<float> pts = transform_points();
+        glBufferData(GL_ARRAY_BUFFER, pts.size() * sizeof(float), pts.data(), GL_STATIC_DRAW);
 
         // 将索引数据传输到 GPU
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -58,9 +61,24 @@ public:
         glDeleteBuffers(1, &EBO);
     }
 
-    void SetUniform(std::shared_ptr<ogl::Program> p)
+    void setOffset(const glm::vec<D, float, glm::packed_highp> &off)
     {
-        p->setUniform("model_rot", rotate);
-        p->setUniform("model_off", offset);
+        offset = off;
+    }
+    void addOffset(const glm::vec<D, float, glm::packed_highp> &off)
+    {
+        offset += off;
+    }
+    void setRotate(const glm::mat<D, D, float, glm::packed_highp> &ro)
+    {
+        rotate = ro;
+    }
+    void addRotate(const glm::mat<D, D, float, glm::packed_highp> &ro)
+    {
+        rotate = ro * rotate;
+    }
+    void addScale(const float &ro)
+    {
+        rotate = (glm::identity<glm::mat<D, D, float, glm::packed_highp>>() * ro) * rotate;
     }
 };
