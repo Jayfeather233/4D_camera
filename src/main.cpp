@@ -61,26 +61,30 @@ int main()
     // Vertex data & buffers
     obj_base *cube4d = create_obj_base();
     std::vector<object4D*> objs;
-    for (int i = 0; i < 9; i++)
-    {
-        if(i<0) continue;
-        objs.push_back(new object4D(cube4d));
-        object4D *u = objs[objs.size()-1];
+    // for (int i = 0; i < 9; i++)
+    // {
+    //     if(i<0) continue;
+    //     objs.push_back(new object4D(cube4d));
+    //     object4D *u = objs[objs.size()-1];
 
-        if (i != 8)
-        {
-            glm::vec4 off = glm::vec4(0.0);
-            off[i / 2] = i % 2 ? 1 : -1;
-            off += -0.5f;
-            u->setOffset(off);
-        } else {
-            u->setOffset(glm::vec4(-0.5f));
-        }
-        u->gen_buffer();
-    }
+    //     if (i != 8)
+    //     {
+    //         glm::vec4 off = glm::vec4(0.0);
+    //         off[i / 2] = i % 2 ? 1 : -1;
+    //         off += -0.5f;
+    //         u->setOffset(off);
+    //     } else {
+    //         u->setOffset(glm::vec4(-0.5f));
+    //     }
+    //     u->gen_buffer();
+    // }
 
-    // objs.push_back(new object4D(object_type::COORD_4D));
-    // objs[objs.size()-1]->gen_buffer();
+    objs.push_back(new object4D(object_type::PLANE_4D));
+    objs[objs.size()-1]->gen_buffer();
+    objs.push_back(new object4D(object_type::CUBE_4D));
+    objs[objs.size()-1]->setOffset(glm::vec4(-0.5f));
+    objs[objs.size()-1]->addOffset(glm::vec4(0, 0, 0, 1.0));
+    objs[objs.size()-1]->gen_buffer();
 
     object3D obj2 = object3D(object_type::CUBE_3D);
     obj2.addRotate(1.5f);

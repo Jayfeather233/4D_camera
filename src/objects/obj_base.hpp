@@ -19,10 +19,12 @@ enum object_type
     // 4D shapes below
     CUBE_4D,
     COORD_4D,
-    // TODO below
+    CELL5,
+    DUO_CYLINDER,
     SPHERE_4D,
     PLANE_4D,
-
+    SUPERPLANE_4D,
+    // TODO below
 };
 
 obj_base *create_obj_base(object_type tp = object_type::CUBE_4D);
