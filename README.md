@@ -25,6 +25,13 @@ For moving 4D Cam: `qweasd` for rotation, `zx` for zoom in/out;
 
 For moving 3D Cam: `ijkl` for rotation, `nm` for zoom in/out
 
+### Demo
+
+Here is a simple demo of a 4D Cube floating on a 2D plane, while I rotating it.
+
+![](./imgs/demo_cube_floatingon_plane.gif)
+
+
 TODO:
 
 more shapes, GUI for displaying different object, both solid/mesh render and line render, camera4D optimization.
