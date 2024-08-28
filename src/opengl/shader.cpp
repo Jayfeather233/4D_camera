@@ -176,7 +176,7 @@ namespace ogl
     void Program::setUniform(const std::string &name, const glm::mat3 &v)
     {
         GLuint loc = glGetUniformLocation(id, name.c_str());
-        glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(v));
+        glUniformMatrix3fv(loc, 1, GL_FALSE, glm::value_ptr(v));
     }
     void Program::setUniform(const std::string &name, const glm::mat4 &v)
     {

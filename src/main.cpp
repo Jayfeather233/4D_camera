@@ -12,6 +12,9 @@
 #include "camera4D.hpp"
 #include "shader.hpp"
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include "glm/ext.hpp"
+
 int SCR_WIDTH = 800, SCR_HEIGHT = 600;
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
@@ -29,8 +32,8 @@ ogl::Camera4D cam4d;
 int main()
 {
     glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_SAMPLES, 4);
 
@@ -54,13 +57,15 @@ int main()
             "Failed to initialize GLEW: {}" + std::string(reinterpret_cast<char const *>(glewGetErrorString(err))));
     }
     glEnable(GL_MULTISAMPLE);
+    // glEnable(GL_DEPTH_TEST);
 
     auto shaderProgram2 = ogl::programFromFiles("./shaders", "simple3D.vs", "simple.fs");
     auto shaderProgram = ogl::programFromFiles("./shaders", "simple4D.vs", "simple.fs");
 
     // Vertex data & buffers
     obj_base *cube4d = create_obj_base();
-    std::vector<object4D*> objs;
+    std::vector<object4D*> obj4s;
+    std::vector<object3D*> obj3s;
     // for (int i = 0; i < 9; i++)
     // {
     //     if(i<0) continue;
@@ -71,25 +76,21 @@ int main()
     //     {
     //         glm::vec4 off = glm::vec4(0.0);
     //         off[i / 2] = i % 2 ? 1 : -1;
-    //         off += -0.5f;
     //         u->setOffset(off);
     //     } else {
-    //         u->setOffset(glm::vec4(-0.5f));
     //     }
     //     u->gen_buffer();
     // }
 
-    objs.push_back(new object4D(object_type::PLANE_4D));
-    objs[objs.size()-1]->gen_buffer();
-    objs.push_back(new object4D(object_type::CUBE_4D));
-    objs[objs.size()-1]->setOffset(glm::vec4(-0.5f));
-    objs[objs.size()-1]->addOffset(glm::vec4(0, 0, 0, 1.0));
-    objs[objs.size()-1]->gen_buffer();
+    obj4s.push_back(new object4D(object_type::PLANE_4D));
+    obj4s[obj4s.size()-1]->gen_buffer();
+    obj4s.push_back(new object4D(object_type::CUBE_4D));
+    obj4s[obj4s.size()-1]->addOffset(glm::vec4(0, 0, 0, 1.0));
+    obj4s[obj4s.size()-1]->gen_buffer();
 
-    object3D obj2 = object3D(object_type::CUBE_3D);
-    obj2.addRotate(1.5f);
-    obj2.setOffset(glm::vec3(-0.5f));
-    obj2.gen_buffer();
+    obj3s.push_back(new object3D(object_type::CUBE_3D));
+    obj3s[obj3s.size()-1]->addScale(1.5f);
+    obj3s[obj3s.size()-1]->gen_buffer();
 
     // Rendering loop
     float lastTime = glfwGetTime();
@@ -107,14 +108,19 @@ int main()
 
         shaderProgram2->bind();
         cam3d.SetUniform(shaderProgram2, SCR_WIDTH, SCR_HEIGHT);
-        obj2.draw();
+        for (auto obj : obj3s)
+        {
+            obj->setUniform(shaderProgram2);
+            obj->draw();
+        }
         shaderProgram2->release();
 
         shaderProgram->bind();
         cam3d.SetUniform(shaderProgram, SCR_WIDTH, SCR_HEIGHT);
         cam4d.SetUniform(shaderProgram);
-        for (auto obj : objs)
+        for (auto obj : obj4s)
         {
+            obj->setUniform(shaderProgram);
             obj->draw();
         }
         shaderProgram->release();
@@ -122,9 +128,12 @@ int main()
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-    for (auto obj : objs)
-        obj->destroy();
-    obj2.destroy();
+    for (auto obj : obj4s){
+        delete obj;
+    }
+    for (auto obj : obj3s){
+        delete obj;
+    }
     glfwDestroyWindow(window);
     glfwTerminate();
     return 0;
