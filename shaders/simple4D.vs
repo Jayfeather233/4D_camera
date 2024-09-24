@@ -17,6 +17,7 @@ uniform mat4 projection;
 void main() {
   gl_Position = projection * view3D * view4D_rot * (model_rot * aPos + model_off - view4D_off);
 
-  ourColor = aColor * (1.0 - gl_Position.w / 50.0) +
-             vec3(0.0, 0.0, 0.0) * gl_Position.w / 50.0;
+  ourColor = aColor;
+  // ourColor = aColor * (1.0 - gl_Position.w * 0.02) +
+  //            vec3(0.0, 0.0, 0.0) * gl_Position.w * 0.02;
 }

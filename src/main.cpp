@@ -6,6 +6,8 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include <chrono>
+#include <thread>
 
 #include "objects.hpp"
 #include "camera3D.hpp"
@@ -57,7 +59,7 @@ int main()
             "Failed to initialize GLEW: {}" + std::string(reinterpret_cast<char const *>(glewGetErrorString(err))));
     }
     glEnable(GL_MULTISAMPLE);
-    // glEnable(GL_DEPTH_TEST);
+    glEnable(GL_DEPTH_TEST);
 
     auto shaderProgram2 = ogl::programFromFiles("./shaders", "simple3D.vs", "simple.fs");
     auto shaderProgram = ogl::programFromFiles("./shaders", "simple4D.vs", "simple.fs");
@@ -84,9 +86,14 @@ int main()
 
     obj4s.push_back(new object4D(object_type::PLANE_4D));
     obj4s[obj4s.size()-1]->gen_buffer();
-    obj4s.push_back(new object4D(object_type::CUBE_4D));
-    obj4s[obj4s.size()-1]->addOffset(glm::vec4(0, 0, 0, 1.0));
+
+    obj4s.push_back(new object4D(object_type::DUO_CYLINDER));
     obj4s[obj4s.size()-1]->gen_buffer();
+
+    // obj4s.push_back(new object4D(object_type::COORD_4D));
+    // obj4s[obj4s.size()-1]->gen_buffer();
+    // obj4s.push_back(new object4D(object_type::HYPER_EX));
+    // obj4s[obj4s.size()-1]->gen_buffer();
 
     obj3s.push_back(new object3D(object_type::CUBE_3D));
     obj3s[obj3s.size()-1]->addScale(1.5f);
@@ -94,17 +101,22 @@ int main()
 
     // Rendering loop
     float lastTime = glfwGetTime();
+    const int targetFPS = 120;
+    const float frameDuration = 1.0 / targetFPS;
 
     // Rendering loop
     while (!glfwWindowShouldClose(window))
     {
         float currentTime = glfwGetTime();
         float deltaTime = currentTime - lastTime;
+        if (deltaTime < frameDuration) {
+            std::this_thread::sleep_for( std::chrono::milliseconds(static_cast<int64_t>(1000 * (frameDuration - deltaTime))));
+        }
         lastTime = currentTime;
 
         processInput(window, deltaTime);
 
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         shaderProgram2->bind();
         cam3d.SetUniform(shaderProgram2, SCR_WIDTH, SCR_HEIGHT);

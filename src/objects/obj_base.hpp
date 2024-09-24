@@ -24,6 +24,9 @@ enum object_type
     SPHERE_4D,
     PLANE_4D,
     SUPERPLANE_4D,
+    CYLINDER_PRISM,
+    HYPER_PARABOLA,
+    HYPER_EX,
     // TODO below
 };
 
