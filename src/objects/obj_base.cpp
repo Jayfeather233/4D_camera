@@ -38,8 +38,8 @@ auto ideneity_color33 = [](const Eigen::Vector3f &u) {
  * -D <= x, y <= D
  * TODO: N, D -> Eigen:Vec3f
  */
-obj_base *create_hyper_plane(std::function<Eigen::Vector4f(const Eigen::scomplex &)> f = identity_scomplex24,
-                             int N = 20, float D = 1.0,
+obj_base *create_hyper_plane(std::function<Eigen::Vector4f(const Eigen::scomplex &)> f,
+                             int N, Eigen::Vector2f D,
                              std::function<Eigen::Vector3f(const Eigen::scomplex &)> color = ideneity_color23,
                              uint32_t circle_around = 0xffffffff)
 {
@@ -48,7 +48,7 @@ obj_base *create_hyper_plane(std::function<Eigen::Vector4f(const Eigen::scomplex
     size_t N_1 = N - 1;
     for (int i = 0; i < N; ++i) {
         for (int j = 0; j < N; ++j) {
-            Eigen::scomplex ori = Eigen::scomplex((i - N_1 / 2.0) / N_1 * 2 * D, (j - N_1 / 2.0) / N_1 * 2 * D);
+            Eigen::scomplex ori = Eigen::scomplex((i - N_1 / 2.0) / N_1 * 2 * D.x(), (j - N_1 / 2.0) / N_1 * 2 * D.y());
             Eigen::Vector4f a = f(ori);
             Eigen::Vector3f col = color(Eigen::scomplex(i * 1.0 / N_1, j * 1.0 / N_1));
             pushback4(obj->points, a.x(), a.y(), a.z(), a.w());
@@ -71,6 +71,12 @@ obj_base *create_hyper_plane(std::function<Eigen::Vector4f(const Eigen::scomplex
         }
     }
     return obj;
+}
+obj_base *create_hyper_plane(std::function<Eigen::Vector4f(const Eigen::scomplex &)> f = identity_scomplex24,
+                             int N = 20, float D = 1.0,
+                             std::function<Eigen::Vector3f(const Eigen::scomplex &)> color = ideneity_color23,
+                             uint32_t circle_around = 0xffffffff) {
+    return create_hyper_plane(f, N, Eigen::Vector2f(D, D), color, circle_around);
 }
 
 obj_base *create_cube(std::function<Eigen::Vector4f(const Eigen::Vector3f &)> f, int N, Eigen::Vector3f D,
@@ -113,7 +119,6 @@ obj_base *create_cube(std::function<Eigen::Vector4f(const Eigen::Vector3f &)> f,
                 }
                 if ((circle_around & 4) != 0 && i == N - 1) {
                     pushback2(obj->edges, pts_id, pts_id - N_1N2);
-                    fmt::print("{}-{}\n", pts_id, pts_id - N_1N2);
                 }
                 pts_id++;
             }
@@ -291,6 +296,14 @@ obj_base *create_obj_base(object_type tp)
     }
     else if (tp == object_type::SUPERPLANE_4D) {
         return create_cube(identity_scomplex34, 20, 1.0, ideneity_color33, 0);
+    }
+    else if (tp == object_type::SPRING_4D) {
+        float r = 0.3, R = 1, C = 1;
+        return create_cube(
+            [&](const Eigen::Vector3f &a) {
+                return Eigen::Vector4f(R*glm::cos(a.z()) + r*glm::cos(a.x()+glm::pi<float>()/2), R*glm::sin(a.z()) + r*glm::sin(a.x()+glm::pi<float>()/2)*glm::cos(a.y()), R*glm::sin(a.z()) + r*glm::sin(a.x()+glm::pi<float>()/2)*glm::sin(a.y()), C * a.z());
+            }, 20, Eigen::Vector3f(glm::pi<float>()/2, glm::pi<float>(), 10), ideneity_color33, 6
+        );
     }
     else if (tp == object_type::CYLINDER_PRISM) {
         obj_base *obj = new obj_base({}, {});

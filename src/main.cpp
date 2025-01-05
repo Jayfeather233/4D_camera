@@ -82,10 +82,10 @@ int main()
     //     u->gen_buffer();
     // }
 
-    obj4s.push_back(new object4D(object_type::SUPERPLANE_4D));
+    obj4s.push_back(new object4D(object_type::COORD_4D));
     obj4s[obj4s.size() - 1]->gen_buffer();
 
-    obj4s.push_back(new object4D(object_type::SPHERE_4D));
+    obj4s.push_back(new object4D(object_type::SPRING_4D));
     obj4s[obj4s.size() - 1]->gen_buffer();
 
     // obj4s.push_back(new object4D(object_type::COORD_4D));
