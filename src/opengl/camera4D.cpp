@@ -35,10 +35,7 @@ glm::mat4 ogl::Camera4D::GetRotationMat() const
 }
 
 // returns the view matrix calculated using Euler Angles and the LookAt Matrix
-std::pair<glm::mat4, glm::vec4> ogl::Camera4D::GetViewMatrix() const
-{
-    return {GetRotationMat(), Position};
-}
+std::pair<glm::mat4, glm::vec4> ogl::Camera4D::GetViewMatrix() const { return {GetRotationMat(), Position}; }
 
 void ogl::Camera4D::SetUniform(std::shared_ptr<ogl::Program> p) const
 {

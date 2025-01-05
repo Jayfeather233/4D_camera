@@ -4,14 +4,15 @@
 
 #include <GL/glew.h>
 
-#include "shader.hpp"
 #include "camera3D.hpp"
+#include "shader.hpp"
 
 static const float SPEED = 2.5f;
 static const float SENSITIVITY = 0.1f;
 static const float ZOOM = 45.0f;
 // constructor with vectors
-ogl::Camera3D::Camera3D(glm::vec3 position, glm::vec3 up, float yaw, float pitch) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
+ogl::Camera3D::Camera3D(glm::vec3 position, glm::vec3 up, float yaw, float pitch)
+    : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
 {
     Position = position;
     WorldUp = up;
@@ -22,10 +23,7 @@ ogl::Camera3D::Camera3D(glm::vec3 position, glm::vec3 up, float yaw, float pitch
 }
 
 // returns the view matrix calculated using Euler Angles and the LookAt Matrix
-glm::mat4 ogl::Camera3D::GetViewMatrix() const
-{
-    return glm::lookAt(Position, Position + Front, Up);
-}
+glm::mat4 ogl::Camera3D::GetViewMatrix() const { return glm::lookAt(Position, Position + Front, Up); }
 
 glm::mat4 ogl::Camera3D::GetProjectionMat(uint32_t SCR_WIDTH, uint32_t SCR_HEIGHT) const
 {
@@ -48,8 +46,7 @@ void ogl::Camera3D::ProcessMouseMovement(float xoffset, float yoffset, GLboolean
     Pitch += yoffset;
 
     // make sure that when pitch is out of bounds, screen doesn't get flipped
-    if (constrainPitch)
-    {
+    if (constrainPitch) {
         if (Pitch > 89.0f)
             Pitch = 89.0f;
         if (Pitch < -89.0f)
@@ -86,7 +83,9 @@ void ogl::Camera3D::updateCameraVectors()
     front.z = sin(glm::radians(Yaw)) * cos(glm::radians(Pitch));
     Front = glm::normalize(front);
     // also re-calculate the Right and Up vector
-    Right = glm::normalize(glm::cross(Front, WorldUp)); // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
+    Right =
+        glm::normalize(glm::cross(Front, WorldUp)); // normalize the vectors, because their length gets closer to 0 the
+                                                    // more you look up or down which results in slower movement.
     Up = glm::normalize(glm::cross(Right, Front));
 
     Position = Front * -distance;

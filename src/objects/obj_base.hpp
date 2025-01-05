@@ -1,19 +1,16 @@
 #pragma once
 
-#include <vector>
 #include <GL/glew.h>
+#include <vector>
 
-struct obj_base
-{
+struct obj_base {
     std::vector<float> points;
     std::vector<GLuint> edges;
 
     obj_base(std::vector<float> pts, std::vector<GLuint> eg);
 };
 
-
-enum object_type
-{
+enum object_type {
     CUBE_3D,
     NUM_3D_OBJ,
     // 4D shapes below

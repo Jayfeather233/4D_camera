@@ -1,17 +1,17 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <Eigen/Core>
+#include <eigen3/Eigen/Core>
 
 // #include <glad/glad.h>
-#include <iostream>
-#include <vector>
-#include <cmath>
 #include <chrono>
+#include <cmath>
+#include <iostream>
 #include <thread>
+#include <vector>
 
-#include "objects.hpp"
 #include "camera3D.hpp"
 #include "camera4D.hpp"
+#include "objects.hpp"
 #include "shader.hpp"
 
 #define GLM_ENABLE_EXPERIMENTAL
@@ -40,8 +40,7 @@ int main()
     glfwWindowHint(GLFW_SAMPLES, 4);
 
     GLFWwindow *window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "4DCam", NULL, NULL);
-    if (window == NULL)
-    {
+    if (window == NULL) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
         return -1;
@@ -53,10 +52,9 @@ int main()
     glfwSwapInterval(1); // Enable vsync
 
     GLenum err = glewInit();
-    if (err != GLEW_OK)
-    {
-        throw std::runtime_error(
-            "Failed to initialize GLEW: {}" + std::string(reinterpret_cast<char const *>(glewGetErrorString(err))));
+    if (err != GLEW_OK) {
+        throw std::runtime_error("Failed to initialize GLEW: {}" +
+                                 std::string(reinterpret_cast<char const *>(glewGetErrorString(err))));
     }
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_DEPTH_TEST);
@@ -66,8 +64,8 @@ int main()
 
     // Vertex data & buffers
     obj_base *cube4d = create_obj_base();
-    std::vector<object4D*> obj4s;
-    std::vector<object3D*> obj3s;
+    std::vector<object4D *> obj4s;
+    std::vector<object3D *> obj3s;
     // for (int i = 0; i < 9; i++)
     // {
     //     if(i<0) continue;
@@ -84,11 +82,11 @@ int main()
     //     u->gen_buffer();
     // }
 
-    obj4s.push_back(new object4D(object_type::PLANE_4D));
-    obj4s[obj4s.size()-1]->gen_buffer();
+    obj4s.push_back(new object4D(object_type::SUPERPLANE_4D));
+    obj4s[obj4s.size() - 1]->gen_buffer();
 
-    obj4s.push_back(new object4D(object_type::DUO_CYLINDER));
-    obj4s[obj4s.size()-1]->gen_buffer();
+    obj4s.push_back(new object4D(object_type::SPHERE_4D));
+    obj4s[obj4s.size() - 1]->gen_buffer();
 
     // obj4s.push_back(new object4D(object_type::COORD_4D));
     // obj4s[obj4s.size()-1]->gen_buffer();
@@ -96,8 +94,8 @@ int main()
     // obj4s[obj4s.size()-1]->gen_buffer();
 
     obj3s.push_back(new object3D(object_type::CUBE_3D));
-    obj3s[obj3s.size()-1]->addScale(1.5f);
-    obj3s[obj3s.size()-1]->gen_buffer();
+    obj3s[obj3s.size() - 1]->addScale(1.5f);
+    obj3s[obj3s.size() - 1]->gen_buffer();
 
     // Rendering loop
     float lastTime = glfwGetTime();
@@ -105,12 +103,12 @@ int main()
     const float frameDuration = 1.0 / targetFPS;
 
     // Rendering loop
-    while (!glfwWindowShouldClose(window))
-    {
+    while (!glfwWindowShouldClose(window)) {
         float currentTime = glfwGetTime();
         float deltaTime = currentTime - lastTime;
         if (deltaTime < frameDuration) {
-            std::this_thread::sleep_for( std::chrono::milliseconds(static_cast<int64_t>(1000 * (frameDuration - deltaTime))));
+            std::this_thread::sleep_for(
+                std::chrono::milliseconds(static_cast<int64_t>(1000 * (frameDuration - deltaTime))));
         }
         lastTime = currentTime;
 
@@ -120,8 +118,7 @@ int main()
 
         shaderProgram2->bind();
         cam3d.SetUniform(shaderProgram2, SCR_WIDTH, SCR_HEIGHT);
-        for (auto obj : obj3s)
-        {
+        for (auto obj : obj3s) {
             obj->setUniform(shaderProgram2);
             obj->draw();
         }
@@ -130,8 +127,7 @@ int main()
         shaderProgram->bind();
         cam3d.SetUniform(shaderProgram, SCR_WIDTH, SCR_HEIGHT);
         cam4d.SetUniform(shaderProgram);
-        for (auto obj : obj4s)
-        {
+        for (auto obj : obj4s) {
             obj->setUniform(shaderProgram);
             obj->draw();
         }
@@ -140,10 +136,10 @@ int main()
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-    for (auto obj : obj4s){
+    for (auto obj : obj4s) {
         delete obj;
     }
-    for (auto obj : obj3s){
+    for (auto obj : obj3s) {
         delete obj;
     }
     glfwDestroyWindow(window);
@@ -157,67 +153,50 @@ void processInput(GLFWwindow *window, float deltaTime)
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-    {
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
         cam4d.ProcessKeyboard(ogl::Camera4D_Movement::FORWARD_4D, deltaTime);
     }
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-    {
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
         cam4d.ProcessKeyboard(ogl::Camera4D_Movement::BACKWARD_4D, deltaTime);
     }
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-    {
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
         cam4d.ProcessKeyboard(ogl::Camera4D_Movement::LEFT1, deltaTime);
     }
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-    {
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
         cam4d.ProcessKeyboard(ogl::Camera4D_Movement::RIGHT1, deltaTime);
     }
-    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
-    {
+    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
         cam4d.ProcessKeyboard(ogl::Camera4D_Movement::LEFT2, deltaTime);
     }
-    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
-    {
+    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
         cam4d.ProcessKeyboard(ogl::Camera4D_Movement::RIGHT2, deltaTime);
     }
-    if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS)
-    {
+    if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS) {
         cam3d.ProcessMouseMovement(0.0f, 1000.0f * deltaTime);
     }
-    if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
-    {
+    if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS) {
         cam3d.ProcessMouseMovement(0.0f, -1000.0f * deltaTime);
     }
-    if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
-    {
+    if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS) {
         cam3d.ProcessMouseMovement(-1000.0f * deltaTime, 0.0f);
     }
-    if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
-    {
+    if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) {
         cam3d.ProcessMouseMovement(1000.0f * deltaTime, 0.0f);
     }
-    if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
-    {
+    if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS) {
         cam4d.addDistance(deltaTime);
     }
-    if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
-    {
+    if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS) {
         cam4d.addDistance(-deltaTime);
     }
-    if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS)
-    {
+    if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS) {
         cam3d.addDistance(deltaTime);
     }
-    if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS)
-    {
+    if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS) {
         cam3d.addDistance(-deltaTime);
     }
 }
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
 // ----------------------------------------------------------------------
-void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
-{
-    cam3d.ProcessMouseScroll(yoffset);
-}
+void scroll_callback(GLFWwindow *window, double xoffset, double yoffset) { cam3d.ProcessMouseScroll(yoffset); }

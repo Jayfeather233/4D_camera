@@ -11,10 +11,11 @@ dependencies:
 
 ```
 cmake
-glfw3
-glew
-glm
-fmt
+libglfw3-dev
+libglew-dev
+libglm-dev
+libfmt-dev
+libeigen3-dev
 ```
 
 then run `bash ./build.sh` to build & run.

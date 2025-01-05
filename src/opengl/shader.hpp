@@ -1,10 +1,10 @@
 #pragma once
 
-#include <fmt/core.h>
 #include <GL/glew.h>
+#include <fmt/core.h>
 
 #include <array>
-#include <Eigen/Core>
+#include <eigen3/Eigen/Core>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -20,14 +20,10 @@
 namespace fs = std::filesystem;
 
 namespace ogl {
-enum class shader_type_t {
-    VERT = GL_VERTEX_SHADER,
-    FRAG = GL_FRAGMENT_SHADER,
-    NONE = 0
-};
+enum class shader_type_t { VERT = GL_VERTEX_SHADER, FRAG = GL_FRAGMENT_SHADER, NONE = 0 };
 
 class Shader {
-   public:
+public:
     // from content
     Shader(shader_type_t, const std::string &);
     // from file
@@ -50,7 +46,7 @@ class Shader {
 };
 
 class Program {
-   public:
+public:
     Program();
 
     Program(const Program &) = delete;
@@ -80,23 +76,22 @@ class Program {
     void setUniform(const std::string &, const glm::mat3 &);
     void setUniform(const std::string &, const glm::mat4 &);
 
-   private:
+private:
     GLenum id;
     bool is_linked = false;
     // std::set<std::unique_ptr<Shader>> shaders;
 };
 
-static inline std::shared_ptr<Program> programFromFiles(
-    const fs::path &shaderDir, const std::string &vertShaderFilename,
-    const std::string &fragShaderFilename) {
+static inline std::shared_ptr<Program> programFromFiles(const fs::path &shaderDir,
+                                                        const std::string &vertShaderFilename,
+                                                        const std::string &fragShaderFilename)
+{
     auto program = std::make_shared<Program>();
 
-    program->attach(std::make_unique<Shader>(shader_type_t::VERT,
-                                             shaderDir / vertShaderFilename));
-    program->attach(std::make_unique<Shader>(shader_type_t::FRAG,
-                                             shaderDir / fragShaderFilename));
+    program->attach(std::make_unique<Shader>(shader_type_t::VERT, shaderDir / vertShaderFilename));
+    program->attach(std::make_unique<Shader>(shader_type_t::FRAG, shaderDir / fragShaderFilename));
 
     program->link();
     return program;
 }
-}  // namespace ogl
+} // namespace ogl
