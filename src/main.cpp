@@ -97,6 +97,9 @@ int main()
     obj3s[obj3s.size() - 1]->addScale(1.5f);
     obj3s[obj3s.size() - 1]->gen_buffer();
 
+    // obj3s.push_back(new object3D(create_obj_fromfile("mesh.txt", false)));
+    // obj3s[obj3s.size() - 1]->gen_buffer();
+
     // Rendering loop
     float lastTime = glfwGetTime();
     const int targetFPS = 120;

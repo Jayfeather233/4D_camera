@@ -3,6 +3,10 @@
 #include <GL/glew.h>
 #include <vector>
 
+#include <filesystem>
+
+namespace fs = std::filesystem;
+
 struct obj_base {
     std::vector<float> points;
     std::vector<GLuint> edges;
@@ -29,3 +33,5 @@ enum object_type {
 };
 
 obj_base *create_obj_base(object_type tp = object_type::CUBE_4D);
+
+obj_base *create_obj_fromfile(const fs::path& filename, bool is_4D);

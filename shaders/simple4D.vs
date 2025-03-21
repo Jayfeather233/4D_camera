@@ -1,8 +1,8 @@
 #version 400 core
 layout(location = 0) in vec4 aPos;
-layout(location = 1) in vec3 aColor; // 顶点颜色
+layout(location = 1) in vec3 aColor;
 
-out vec3 ourColor; // 向片段着色器输出颜色
+out vec3 ourColor;
 
 // no mat5 so
 uniform mat4 model_rot;

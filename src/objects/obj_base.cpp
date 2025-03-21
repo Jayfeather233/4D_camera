@@ -360,3 +360,40 @@ obj_base *create_obj_base(object_type tp)
 
     return nullptr;
 }
+
+obj_base *create_obj_fromfile(const fs::path& filename, bool is_4D) {
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        return nullptr;
+    }
+    size_t n_points;
+    file >> n_points;
+    obj_base *obj = new obj_base({}, {});
+    for (size_t i = 0; i < n_points; ++i) {
+        if (is_4D){
+            float x, y, z, w;
+            file >> x >> y >> z >> w;
+            pushback4(obj->points, x, y, z, w);
+            float r, g, b;
+            file >> r >> g >> b;
+            pushback3(obj->points, r, g, b);
+        } else {
+            float x, y, z;
+            file >> x >> y >> z;
+            pushback3(obj->points, x, y, z);
+            float r, g, b;
+            file >> r >> g >> b;
+            pushback3(obj->points, r, g, b);
+        }
+    }
+    size_t n_edges;
+    file >> n_edges;
+    for (size_t i = 0; i < n_edges; ++i) {
+        GLuint a, b, c;
+        file >> a >> b >> c;
+        pushback2(obj->edges, a, b);
+        pushback2(obj->edges, b, c);
+        pushback2(obj->edges, c, a);
+    }
+    return obj;
+}
