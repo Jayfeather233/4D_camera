@@ -1,23 +1,14 @@
 #pragma once
 
 #include <GL/glew.h>
-#include <fmt/core.h>
 
-#include <array>
 #include <eigen3/Eigen/Core>
 #include <filesystem>
-#include <fstream>
-#include <iostream>
 #include <memory>
-#include <set>
-#include <sstream>
-#include <stdexcept>
 #include <string>
-#include <vector>
+#include <unordered_map>
 
 #include <glm/glm.hpp>
-
-namespace fs = std::filesystem;
 
 namespace ogl {
 enum class shader_type_t { VERT = GL_VERTEX_SHADER, FRAG = GL_FRAGMENT_SHADER, NONE = 0 };
@@ -27,7 +18,7 @@ public:
     // from content
     Shader(shader_type_t, const std::string &);
     // from file
-    Shader(shader_type_t, const fs::path &);
+    Shader(shader_type_t, const std::filesystem::path &);
 
     Shader(const Shader &) = delete;
     Shader &operator=(const Shader &) = delete;
@@ -37,12 +28,11 @@ public:
     ~Shader();
 
     void compile();
-    // TODO preprocess some marco like #include
-    // void preprocess();
+
     std::string source;
-    fs::path shader_path;
-    GLuint id;
-    bool is_compiled;
+    std::filesystem::path shader_path;
+    GLuint id = 0;
+    bool is_compiled = false;
 };
 
 class Program {
@@ -51,9 +41,8 @@ public:
 
     Program(const Program &) = delete;
     Program &operator=(const Program &) = delete;
-
-    Program(Program &&) = default;
-    Program &operator=(Program &&) = default;
+    Program(Program &&) = delete;
+    Program &operator=(Program &&) = delete;
 
     ~Program();
 
@@ -62,6 +51,9 @@ public:
 
     void bind();
     void release() const;
+
+    /// Cached glGetUniformLocation; returns -1 for unknown names.
+    GLint uniformLocation(const std::string &name);
 
     void setUniform(const std::string &, int);
     void setUniform(const std::string &, float);
@@ -77,21 +69,14 @@ public:
     void setUniform(const std::string &, const glm::mat4 &);
 
 private:
-    GLenum id;
+    GLuint id = 0;
     bool is_linked = false;
-    // std::set<std::unique_ptr<Shader>> shaders;
+    std::unordered_map<std::string, GLint> uniform_locations_;
 };
 
-static inline std::shared_ptr<Program> programFromFiles(const fs::path &shaderDir,
-                                                        const std::string &vertShaderFilename,
-                                                        const std::string &fragShaderFilename)
-{
-    auto program = std::make_shared<Program>();
+std::shared_ptr<Program> programFromFiles(const std::filesystem::path &shaderDir, const std::string &vertShaderFilename,
+                                          const std::string &fragShaderFilename);
 
-    program->attach(std::make_unique<Shader>(shader_type_t::VERT, shaderDir / vertShaderFilename));
-    program->attach(std::make_unique<Shader>(shader_type_t::FRAG, shaderDir / fragShaderFilename));
-
-    program->link();
-    return program;
-}
+/// Shader directory: $FOURDCAM_SHADER_DIR if set, otherwise the path baked in at build time.
+std::filesystem::path defaultShaderDir();
 } // namespace ogl
